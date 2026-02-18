@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>McpProxy</RootNamespace>
+    <AssemblyName>McpProxy</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Reference local project source from Agent365-dotnet -->
+    <ProjectReference Include="..\..\..\..\..\Agent365-dotnet\src\Tooling\LocalMcp\Microsoft.Agents.A365.Tooling.LocalMcp.csproj" />
+  </ItemGroup>
+</Project>

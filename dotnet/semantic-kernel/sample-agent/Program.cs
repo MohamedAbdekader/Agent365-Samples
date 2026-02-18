@@ -8,7 +8,6 @@ using Microsoft.Agents.A365.Observability.Extensions.SemanticKernel;
 using Microsoft.Agents.A365.Observability.Hosting;
 using Microsoft.Agents.A365.Observability.Runtime;
 using Microsoft.Agents.A365.Tooling.Extensions.SemanticKernel.Services;
-using Microsoft.Agents.A365.Tooling.LocalMcp.Extensions;
 using Microsoft.Agents.A365.Tooling.Services;
 using Microsoft.Agents.Builder;
 using Microsoft.Agents.Hosting.AspNetCore;
@@ -83,18 +82,6 @@ builder.Services.AddSingleton<IMcpToolServerConfigurationService, McpToolServerC
 // before allowing invocation (similar to how remote MCP servers validate via token)
 builder.Services.AddSingleton<ILocalMcpScopeValidator, LocalMcpScopeValidator>();
 
-// Add Local MCP Proxy for Windows desktop MCP servers via WNS
-// This enables the agent to discover and call local MCP tools on the user's Windows machine
-// Configuration is read from appsettings.json sections: WnsConfiguration and LocalMcpProxy
-//
-// By default, in-memory storage is used (suitable for development only).
-// For production, configure a persistent storage backend:
-//   .UseCustomStorage<CosmosDbSessionManager>()   - For multi-region
-//   .UseCustomStorage<RedisSessionManager>()      - For horizontal scaling
-//   .UseCustomStorage(sp => new MyStorage(...))   - For custom implementations
-builder.Services.AddLocalMcpProxy(builder.Configuration);
-// TODO: For production, add: .UseCustomStorage<YourProductionSessionManager>();
-
 // Configure the HTTP request pipeline.
 // Add AspNet token validation for Azure Bot Service and Entra.
 builder.Services.AddControllers();
@@ -107,10 +94,6 @@ WebApplication app = builder.Build();
 // Enable AspNet authentication and authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
-// Enable Local MCP Proxy endpoints (WebSocket, WNS registration, discovery, etc.)
-// This adds: /api/channels/register, /api/notify/{client}, /ws/mcp/{session}, /api/mcp/{session}, etc.
-app.UseLocalMcpProxy();
 
 // This receives incoming messages from Azure Bot Service or other SDK Agents
 app.MapPost("/api/messages", async (HttpRequest request, HttpResponse response, IAgentHttpAdapter adapter, IAgent agent, CancellationToken cancellationToken) =>
